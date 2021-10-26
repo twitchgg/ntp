@@ -62,7 +62,7 @@ func TestTCPAddr(t *testing.T) {
 }
 
 func TestTCPNTP(t *testing.T) {
-	host := "10.10.10.23"
+	host := "10.10.10.24"
 	r, err := QueryWithOptions(host, QueryOptions{})
 	if err != nil {
 		t.Fatal(err)
