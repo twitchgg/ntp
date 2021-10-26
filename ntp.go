@@ -150,9 +150,9 @@ func (m *msg) setLeap(li LeapIndicator) {
 }
 
 // getVersion returns the version value in the message.
-func (m *msg) getVersion() int {
-	return int((m.LiVnMode >> 3) & 0x07)
-}
+// func (m *msg) getVersion() int {
+// 	return int((m.LiVnMode >> 3) & 0x07)
+// }
 
 // getMode returns the mode value in the message.
 func (m *msg) getMode() mode {
@@ -338,17 +338,17 @@ func getTime(host string, opt QueryOptions) (*msg, ntpTime, error) {
 	if opt.Version < 2 || opt.Version > 4 {
 		return nil, 0, errors.New("invalid protocol version requested")
 	}
-
 	// Resolve the remote NTP server address.
-	raddr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(host, "123"))
+	raddr, err := net.ResolveTCPAddr(
+		"tcp", net.JoinHostPort(host, "123"))
 	if err != nil {
 		return nil, 0, err
 	}
 
 	// Resolve the local address if specified as an option.
-	var laddr *net.UDPAddr
+	var laddr *net.TCPAddr
 	if opt.LocalAddress != "" {
-		laddr, err = net.ResolveUDPAddr("udp", net.JoinHostPort(opt.LocalAddress, "0"))
+		laddr, err = net.ResolveTCPAddr("tcp", net.JoinHostPort(opt.LocalAddress, "0"))
 		if err != nil {
 			return nil, 0, err
 		}
@@ -360,7 +360,7 @@ func getTime(host string, opt QueryOptions) (*msg, ntpTime, error) {
 	}
 
 	// Prepare a "connection" to the remote server.
-	con, err := net.DialUDP("udp", laddr, raddr)
+	con, err := net.DialTCP("tcp", laddr, raddr)
 	if err != nil {
 		return nil, 0, err
 	}

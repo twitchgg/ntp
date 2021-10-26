@@ -5,6 +5,8 @@
 package ntp
 
 import (
+	"fmt"
+	"net/url"
 	"strings"
 	"testing"
 	"time"
@@ -46,6 +48,26 @@ func assertInvalid(t *testing.T, r *Response) {
 	if err == nil {
 		t.Errorf("[%s] Response unexpectedly valid\n", host)
 	}
+}
+
+func TestTCPAddr(t *testing.T) {
+	uri := "tcp://10.10.10.23:123"
+	c, err := url.Parse(uri)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(c.Scheme)
+	fmt.Println(c.Hostname())
+	fmt.Println(c.Port())
+}
+
+func TestTCPNTP(t *testing.T) {
+	host := "10.10.10.23"
+	r, err := QueryWithOptions(host, QueryOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(r.ClockOffset)
 }
 
 func TestTime(t *testing.T) {
@@ -213,14 +235,14 @@ func TestLongConversion(t *testing.T) {
 	}
 }
 
-func abs(d time.Duration) time.Duration {
-	switch {
-	case int64(d) < 0:
-		return -d
-	default:
-		return d
-	}
-}
+// func abs(d time.Duration) time.Duration {
+// 	switch {
+// 	case int64(d) < 0:
+// 		return -d
+// 	default:
+// 		return d
+// 	}
+// }
 
 func TestOffsetCalculation(t *testing.T) {
 	now := time.Now()
